@@ -19,8 +19,6 @@ public class PossibleMovesHelp : MonoBehaviour
 
     public void ShowPossibleMoves()
     {
-        if (!show_moves_isOn)
-            return;
 
         foreach (GameObject sphere in Spheres)
         {

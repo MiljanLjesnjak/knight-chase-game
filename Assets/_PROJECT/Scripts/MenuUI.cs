@@ -77,7 +77,7 @@ public class MenuUI : MonoBehaviour
         #endregion
 
         #region Show_Possible_Moves
-        show_moves = PlayerPrefs.GetInt("show_moves", 0);
+        show_moves = PlayerPrefs.GetInt("show_moves", 1);
         if(show_moves == 1)
         {
             show_moves_toggle.isOn = true;
@@ -100,10 +100,10 @@ public class MenuUI : MonoBehaviour
 
 
         //Checks if first time playing (tutorial)
-        if (PlayerPrefs.GetInt("first_time", 0) == 0)
-        {
-            SceneManager.LoadSceneAsync("TutorialsScene");
-        }
+        //if (PlayerPrefs.GetInt("first_time", 0) == 0)
+        //{
+        //    SceneManager.LoadSceneAsync("TutorialsScene");
+        //}
 
         setSkins();
     }

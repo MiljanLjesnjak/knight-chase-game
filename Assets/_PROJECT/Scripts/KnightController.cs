@@ -65,18 +65,19 @@ public class KnightController : MonoBehaviour
     {
         //Starts input
         StopAllCoroutines();
-        if (MenuUI.input_type == 1)
-        {
-            StartCoroutine(inputTouch());
-        }
-        else if (MenuUI.input_type == 0)
-        {
-            StartCoroutine(inputSwipe());
-        }
-        else
-        {
-            StartCoroutine(inputTouch());
-        }
+
+        //if (MenuUI.input_type == 1)
+        //{
+        //    StartCoroutine(inputTouch());
+        //}
+        //else if (MenuUI.input_type == 0)
+        //{
+        //    StartCoroutine(inputSwipe());
+        //}
+        //else
+        //{
+        //    StartCoroutine(inputTouch());
+        //}
 
         //Sound mute
         if (MenuUI.mute_sound == 1)
@@ -97,6 +98,21 @@ public class KnightController : MonoBehaviour
 
     private void Update()
     {
+        //WEBGL
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            RaycastHit hit_info;
+            Ray screen_ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(screen_ray, out hit_info))
+            {
+                if (hit_info.collider.gameObject.CompareTag("Field") || hit_info.collider.CompareTag("Enemy"))
+                {
+                    knightMoveCheck(transform.position, hit_info.collider.transform.position);
+                }
+            }
+        }
+
         if (score_travel > 5)
         {
             timer += Time.deltaTime;
@@ -126,7 +142,7 @@ public class KnightController : MonoBehaviour
 
         if (is_moving)
         {
-            return false;   
+            return false;
         }
 
         if ((Mathf.Abs(Mathf.Round(desired_pos.x) - current_pos.x) == 1 && Mathf.Abs(Mathf.Round(desired_pos.z) - current_pos.z) == 2)
@@ -257,10 +273,12 @@ public class KnightController : MonoBehaviour
                     }
                 }
             }
-            
+
             yield return null;
         }
     }
+
+
 
 
     //Checks for swipe input
