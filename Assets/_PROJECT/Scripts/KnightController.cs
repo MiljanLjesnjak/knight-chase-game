@@ -41,9 +41,9 @@ public class KnightController : MonoBehaviour
 
     private void Awake()
     {
-        Application.targetFrameRate = 60;
-
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        //Application.targetFrameRate = 60;
+        
+        //Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
         knight_as = GetComponent<AudioSource>();
 
@@ -163,7 +163,7 @@ public class KnightController : MonoBehaviour
     }
 
 
-    int noi = 16;
+    int noi = 32;
     IEnumerator moveKnight(Vector3 current_pos, Vector3 desired_pos)
     {
         is_moving = true;
@@ -202,9 +202,7 @@ public class KnightController : MonoBehaviour
         //Rounds up position values of the knight
         transform.position = new Vector3(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y), Mathf.Round(transform.position.z));
 
-        //Move sound
-        knight_as.PlayOneShot(move_sound);
-
+        
         //Score
         //Checks if knight captures a piece
         Collider[] col = Physics.OverlapSphere(transform.position + new Vector3(0, 0.5f, 0), 0.5f);
@@ -220,6 +218,8 @@ public class KnightController : MonoBehaviour
 
         }
 
+        //Move sound
+        knight_as.PlayOneShot(move_sound);
 
         distance_traveled += Mathf.RoundToInt(desired_pos.z) - Mathf.RoundToInt(current_pos.z);
 

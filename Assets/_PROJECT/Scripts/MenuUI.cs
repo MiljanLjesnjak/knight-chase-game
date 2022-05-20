@@ -50,9 +50,9 @@ public class MenuUI : MonoBehaviour
 
     private void Awake()
     {
-        Application.targetFrameRate = 60;
+        //Application.targetFrameRate = 60;
 
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        //Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
         #region Settings_ControllType
         input_type = PlayerPrefs.GetInt("input_type", 1);
