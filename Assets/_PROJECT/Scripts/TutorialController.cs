@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -18,7 +19,7 @@ public class TutorialController : MonoBehaviour
     [SerializeField]
     Button ui_tutorial_button = default;
     [SerializeField]
-    Text ui_tutorial_text = default;
+    TextMeshProUGUI ui_tutorial_text = default;
 
     int step = 0;
     string[] tutorial_text = { "Welcome !\nThis short tutorial will teach you the basics to the game.\n\n[press here to start]\n",
@@ -33,11 +34,13 @@ public class TutorialController : MonoBehaviour
 
     [Header("Step 1")]
     [SerializeField]
-    Material flashing_red_mat = default;
+    Material material_flashing_red;
     [SerializeField]
-    Texture default_texture = default;
+    Material material_darkfield;
     [SerializeField]
-    Texture flashing_red_texture = default;
+    Material material_lightfield;
+    [SerializeField]
+    Texture flashing_red_texture, default_texture_light, default_texture_dark;
 
     [Header("Step 5")]
     [SerializeField]
@@ -50,14 +53,16 @@ public class TutorialController : MonoBehaviour
 
     private void Awake()
     {
-        Application.targetFrameRate = 60;
+        //Application.targetFrameRate = 60;
 
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
         knight_child = transform.GetChild(0).gameObject;
         knight_as = GetComponent<AudioSource>();
 
-        flashing_red_mat.SetTexture("_BaseMap", default_texture);
+        material_flashing_red.SetTexture("_BaseMap", default_texture_light);
+        material_darkfield.SetTexture("_BaseMap", default_texture_dark);
+        material_lightfield.SetTexture("_BaseMap", default_texture_light);
     }
 
     private void Start()
@@ -88,11 +93,11 @@ public class TutorialController : MonoBehaviour
         while (true)
         {
             //Fields flash in red color
-            flashing_red_mat.SetTexture("_BaseMap", flashing_red_texture);
+            material_flashing_red.SetTexture("_BaseMap", flashing_red_texture);
 
             yield return new WaitForSeconds(0.75f);
 
-            flashing_red_mat.SetTexture("_BaseMap", default_texture);
+            material_flashing_red.SetTexture("_BaseMap", default_texture_light);
 
             yield return new WaitForSeconds(0.75f);
 
@@ -105,7 +110,7 @@ public class TutorialController : MonoBehaviour
     //Types of input
     IEnumerator TutorialStep2()
     {
-        flashing_red_mat.SetTexture("_BaseMap", default_texture);
+        material_flashing_red.SetTexture("_BaseMap", default_texture_light);
 
         yield return null;
     }

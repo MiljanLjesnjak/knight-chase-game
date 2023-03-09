@@ -41,7 +41,7 @@ public class KnightController : MonoBehaviour
 
     private void Awake()
     {
-        //Application.targetFrameRate = 60;
+        //Application.targetFrameRate = 120;
         
         //Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
@@ -430,15 +430,24 @@ public class KnightController : MonoBehaviour
             knight_rb = gameObject.AddComponent<Rigidbody>();
             gameObject.GetComponent<MeshCollider>().isTrigger = false;
 
-            knight_rb.AddForce(new Vector3(Random.Range(-1, 1), Random.Range(0, 1), Random.Range(-1, 1)) * 5f, ForceMode.Impulse);
-
-            GetComponent<GameUI>().open_pause_panel();
+            knight_rb.AddForce(new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 5f, ForceMode.Impulse);
 
             StopAllCoroutines();
+
+            StartCoroutine(OpenDeathScreen());
+
             this.enabled = false;
         }
     }
 
+    IEnumerator OpenDeathScreen()
+    {
+        yield return new WaitForSeconds(0.5f);
+        GetComponent<GameUI>().open_pause_panel();
+    }
+
 }
+
+
 
 
