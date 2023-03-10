@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class KnightController : MonoBehaviour
 {
     [SerializeField]
-    GameObject knight_child = default;
+    Transform knight_child = default;
     Rigidbody knight_rb;
 
     bool is_moving = false;
@@ -15,11 +15,21 @@ public class KnightController : MonoBehaviour
     public PlatformController PlatformController;
     public PossibleMovesHelp PossibleMoves;
 
+    Transform level_parent;
+ 
+
+    [SerializeField] [Range(0, 1f)] float travel_duration = 0.25f;
+    [SerializeField] [Range(0, 1f)] float level_move_duration = 0.15f;
+    [SerializeField] [Range(0, 10f)] float jump_height = 3f;
+
+
+
     [SerializeField]
     [Range(0, 25)]
     float time_limit = 5;
     float timer = 0;
 
+    
     [Header("Swipe Input")]
     int swipe_num = 1;
     Vector2 swipe_delta1 = Vector2.zero;
@@ -42,8 +52,10 @@ public class KnightController : MonoBehaviour
     private void Awake()
     {
         //Application.targetFrameRate = 120;
-        
+
         //Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+        level_parent = PlatformController.level_parent;
 
         knight_as = GetComponent<AudioSource>();
 
@@ -162,8 +174,6 @@ public class KnightController : MonoBehaviour
         return false;
     }
 
-
-    int noi = 32;
     IEnumerator moveKnight(Vector3 current_pos, Vector3 desired_pos)
     {
         is_moving = true;
@@ -172,37 +182,57 @@ public class KnightController : MonoBehaviour
 
         yield return new WaitForSeconds(0.075f);
 
-        //Knight Move
-        for (int i = 0; i < noi; i++)
+
+        //Move knight
+        float travel_time = 0f;
+
+        Vector3 knight_start_position = current_pos;
+        Vector3 knight_end_position = desired_pos;
+        knight_end_position.z = 0;
+ 
+        Vector3 level_start_position = level_parent.position;
+        Vector3 level_end_position = level_start_position + Vector3.back * (desired_pos.z - current_pos.z);
+
+        Vector3 knight_jump_bottom = Vector3.zero;
+        Vector3 knight_jump_top = Vector3.up * jump_height;
+
+        Quaternion start_rotation = knight_child.rotation;
+        Quaternion end_rotation = Quaternion.Euler(0, -25f * desired_pos.x, 0);
+  
+        while (travel_time < travel_duration)
         {
-            //Moves the knight
-            transform.Translate(new Vector3(Mathf.Round(desired_pos.x) - current_pos.x, 0, 0) / noi);
-            //Moves the level
-            PlatformController.LevelTranslate(-(Mathf.Round(desired_pos.z) - current_pos.z) / noi);
+            //Lerp x position of knight
+            transform.position = Vector3.Lerp(knight_start_position, knight_end_position, travel_time / travel_duration);
 
 
-            //Rotates knight according to X position
-            knight_child.transform.rotation = Quaternion.Euler(0, Mathf.Lerp(knight_child.transform.rotation.y, 25f * -transform.position.x, i), 0);
-
-            //Jumps
-            if (i < noi / 2)
-            {
-                transform.Translate(0, 2f / noi / 2, 0);
-            }
-
+            //Lerp y position of knight
+            if (travel_time < travel_duration / 2)
+                knight_child.localPosition = Vector3.Lerp(knight_jump_bottom, knight_jump_top, travel_time / travel_duration);
             else
-            {
-                transform.Translate(0, -2f / noi / 2, 0);
-            }
+                knight_child.localPosition = Vector3.Lerp(knight_jump_top, knight_jump_bottom, travel_time / travel_duration);
+
+
+            //Lerp knight rotation
+            knight_child.rotation = Quaternion.Lerp(start_rotation, end_rotation, travel_time / travel_duration);
+
+
+            //Lerp z position of level and knight
+            level_parent.position = Vector3.Lerp(level_start_position, level_end_position, travel_time / travel_duration);
+
+            travel_time += Time.deltaTime;
+
 
             yield return null;
         }
-
-
-        //Rounds up position values of the knight
-        transform.position = new Vector3(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y), Mathf.Round(transform.position.z));
-
         
+        level_parent.position = level_end_position;
+        transform.position = knight_end_position;
+        knight_child.localPosition = knight_jump_bottom;
+
+        knight_child.rotation = end_rotation;
+
+
+
         //Score
         //Checks if knight captures a piece
         Collider[] col = Physics.OverlapSphere(transform.position + new Vector3(0, 0.5f, 0), 0.5f);
@@ -246,6 +276,9 @@ public class KnightController : MonoBehaviour
 
 
         is_moving = false;
+
+        if(level_parent.position.z < -100f)
+            PlatformController.LevelRecenter();
 
         PossibleMoves.ShowPossibleMoves();
     }

@@ -5,6 +5,10 @@ using UnityEngine;
 public class PlatformController : MonoBehaviour
 {
 
+    [SerializeField] Transform knight;
+
+    public Transform level_parent;
+
     [SerializeField]
     GameObject platform_parent = default;
 
@@ -33,16 +37,25 @@ public class PlatformController : MonoBehaviour
 
             SpawnPlatform();
         }
+
     }
 
-    public void LevelTranslate(float distance)
-    {
-        foreach (GameObject platform in active_platforms)
-        {
-            platform.transform.Translate(0, 0, distance);
-        }
 
-        spawner.transform.Translate(0, 0, distance);
+    //Recenter level z coord after it becomes too large
+    public void LevelRecenter()
+    {
+
+        float distance = -level_parent.position.z;
+
+        //Level 
+        level_parent.position = new Vector3(level_parent.position.x, level_parent.position.y, 0);
+
+        //Level children
+        knight.Translate(Vector3.back * distance);
+        foreach (Transform child in platform_parent.transform)
+            child.Translate(Vector3.back * distance);
+        spawner.transform.Translate(Vector3.back * distance);
+
     }
 
     void OnTriggerEnter(Collider other)
@@ -61,7 +74,6 @@ public class PlatformController : MonoBehaviour
 
             SpawnPlatform();
         }
-
     }
 
     int index;
